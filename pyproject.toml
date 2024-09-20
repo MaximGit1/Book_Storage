@@ -11,6 +11,7 @@ django = "5.1"
 black = "^24.8.0"
 python-dotenv = "^1.0.1"
 pillow = "^10.4.0"
+markdown = "^3.7"
 
 
 [build-system]

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load books_tags %}
+
+{% block title %}{{ review.unit.title }}{% endblock %}
+
+{% block content %}
+    <div class="review">
+        <p>Тут аватарка будет, {{ review.author.username }}</p>
+        <p>{{ review.body|markdown }}</p>
+        <p>Updated: {{ review.updated }}</p>
+    </div>
+{% endblock %}

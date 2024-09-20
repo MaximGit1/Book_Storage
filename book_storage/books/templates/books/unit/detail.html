@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load books_tags %}
+
+{% block title %}{{ unit.title }}{% endblock %}
+
+{% block content %}
+    <div class="main">
+        <div class="general-info">
+            <img src="{{ book.image.url }}" alt="{{ book.title }} style="width="150px">
+            <p>{{ book.title }}</p>
+            <p>{{ book.author }}</p>
+            <img src="{{ unit.image.url }}" alt="{{ unit.title }} style="width="125px"">
+            <p>Unit {{ unit.unit_order }} - {{ unit.title }}</p>
+            <p>In unit: {{ unit.description }}</p>
+        </div>
+        <div class="reviews">
+            <h2>Тут будет слайдер среди самых популярных отзывов</h2>
+            {% for review in reviews %}
+                <div class="review">
+                    <p>Тут аватарка будет, {{ review.author.username }}</p>
+                    <p>{{ review.body|markdown }}</p>
+                    <p>Updated: {{ review.updated }}</p>
+                </div>
+            {% empty %}
+                <p>No reviews</p>
+            {% endfor %}
+        </div>
+        <div class="user-review">
+            {% if user_review %}
+                <div class="user-review">
+                    <h4>Your preview</h4>
+                    <p>{{ user_review.body|markdown|truncatewords_html:5 }}
+                    <a href="{{ user_review.get_absolute_url }}">read</a> </p>
+                </div>
+            {% else %}
+            <a href="{% url "books:create_review" unit.pk %}">
+                <p>You can write a review</p>
+            </a>
+            {% endif %}
+        </div>
+        <div class="review_list">
+            <h2>Тут просто кто что написал и ссылка, чтобы прочитать</h2>
+            {% for review in reviews %}
+                <div class="review">
+                    <p>Тут аватарка будет, {{ review.author.username }}</p>
+                    <a href="{{ review.get_absolute_url }}">
+                        <p>{{ review.body|markdown|truncatewords_html:7 }}</p>
+                    </a>
+                    <p>Updated: {{ review.updated }}</p>
+                </div>
+            {% empty %}
+                <p>No reviews</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
