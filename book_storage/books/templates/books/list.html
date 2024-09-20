@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Storage{% endblock %}
+
+{% block content %}
+    <div class="main">
+      {% for book in books %}
+        <div class="book">
+          <img src="{{ book.image.url }}" alt="{{ book.title }} style="width="150px">
+          <a href="#">{{ book.title }}</a>
+        </div>
+      {% endfor %}
+    </div>
+{% endblock %}
