@@ -41,7 +41,7 @@ class Book(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("book:book_detail_view", args=[self.slug])
+        return reverse("books:book_detail", args=[self.slug])
 
 
 class BookUnit(models.Model):

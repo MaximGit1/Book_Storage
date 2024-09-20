@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+    <div class="Units-list">
+      {% for unit in units %}
+        <div class="unit">
+            <img src="{{ unit.image.url }}" alt="{{ unit.title }} style="width="125px">
+            <h3>Unit {{ unit.unit_order }} - {{ unit.title }}</h3>
+            <p>In this unit: {{ unit.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+{% endblock %}
