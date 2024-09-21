@@ -2,13 +2,13 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.test import TestCase
 from .models import Book, Author, BookUnit, MarkDownReview
+from django.urls import reverse
 
 
 class TestBook(TestCase):
     def setUp(self):
-        self.user = User.objects.create(
-            username="test_user",
-            password="test_password",
+        self.user = User.objects.create_user(
+            username="test_user", password="test_password"
         )
 
         self.author = Author.objects.create(
@@ -47,11 +47,18 @@ class TestBook(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.book.title, response.content.decode())
 
-    def test_create_review_redirect(self):
+    def test_create_review(self):
         self.client.login(username="test_user", password="test_password")
-        data = {"body": "lorem la-la-la"}
+        data = {"body": "test_create_review_create"}
         response = self.client.post(f"/book/review/create/{self.unit.pk}/", data)
         self.assertEqual(response.status_code, 302)
+        review = MarkDownReview.objects.filter(
+            unit=self.unit, body="test_create_review_create"
+        ).last()
+        self.assertIsNotNone(review)
+        self.assertEqual(review.author, self.user)
+        self.assertEqual(review.unit, self.unit)
+        self.assertEqual(response.url, review.get_absolute_url())
 
     def test_review_detail(self):
         response = self.client.get(f"/book/review/{self.review.pk}/")
