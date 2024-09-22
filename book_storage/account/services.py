@@ -22,5 +22,13 @@ def create_user_directory_path(instance, filename: str) -> str:
     return str(Path(f"users/").joinpath(filename))
 
 
-def create_user_profile(user, image):
+def create_user_profile(user, image) -> Profile:
     return Profile.objects.create(user=user, photo=image)
+
+def get_user_profile(user) -> Profile | None:
+    try:
+        profile = Profile.objects.get(user=user)
+    except Exception as e:
+        print(e)
+        profile = None
+    return profile

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load books_tags %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+  {% with user=request.user %}
+    <div class="main">
+      <h3>{{ user.username }}</h3>
+      <img src="{{ profile.photo.url }}" alt="{{ profile.photo.url }}">
+      <p>{{ profile.about|markdown }}</p>
+    </div>
+  {% endwith %}
+{% endblock %}
