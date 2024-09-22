@@ -4,10 +4,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Book, BookUnit, MarkDownReview
 from .forms import CreateMarkDownReviewForm
+from . import services
 
 
 def book_list_view(request: HttpRequest) -> HttpResponse:
-    books: QuerySet[Book] = Book.published.all()
+    books = services.get_published_books()
     data = {"books": books}
     return render(request, "books/list.html", data)
 
