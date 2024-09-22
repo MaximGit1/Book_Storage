@@ -5,4 +5,5 @@ app_name = "account"
 
 urlpatterns = [
     path("", v.profile_detail_view, name="self_profile"),
+    path("logout/", v.logout_view, name="logout"),
 ]

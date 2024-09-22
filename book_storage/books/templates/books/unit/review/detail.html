@@ -5,7 +5,8 @@
 
 {% block content %}
     <div class="review">
-        <p>Тут аватарка будет, {{ review.author.username }}</p>
+        <img src="{{ review.author.profile.photo.url }}" alt="{{ review.author.username }}">
+        <p>{{ review.author.username }}</p>
         <p>{{ review.body|markdown }}</p>
         <p>Updated: {{ review.updated }}</p>
     </div>

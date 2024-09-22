@@ -25,10 +25,11 @@ def create_user_directory_path(instance, filename: str) -> str:
 def create_user_profile(user, image) -> Profile:
     return Profile.objects.create(user=user, photo=image)
 
+
 def get_user_profile(user) -> Profile | None:
     try:
         profile = Profile.objects.get(user=user)
-    except Exception as e:
-        print(e)
+    except Profile.DoesNotExist:
         profile = None
+        print("Profile DoesNotExist")
     return profile
