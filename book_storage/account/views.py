@@ -12,7 +12,7 @@ from . import services
 
 
 @login_required
-def profile_detail_view(request: HttpRequest) -> HttpResponse:
+def profile_detail_view(request: HttpRequest) -> HttpResponse | HttpResponseNotFound:
     profile = services.get_user_profile(request.user)
     if profile is None:
         return HttpResponseNotFound("<h1>Not found...</h1>")

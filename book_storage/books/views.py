@@ -1,5 +1,5 @@
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Book, BookUnit, MarkDownReview
@@ -13,9 +13,11 @@ def book_list_view(request: HttpRequest) -> HttpResponse:
     return render(request, "books/list.html", data)
 
 
-def book_detail_view(request: HttpRequest, book_slug: str) -> HttpResponse:
-    book: Book = get_object_or_404(Book, slug=book_slug, status=Book.Status.PUBLISHED)
-    units: QuerySet[BookUnit] = book.units.all()
+def book_detail_view(request: HttpRequest, book_slug: str) -> HttpResponse | HttpResponseNotFound:
+    book = services.get_published_book(book_slug)
+    if book is None:
+        return HttpResponseNotFound("<h1>Not found...</h1>")
+    units = services.get_book_units(book)
     data = {"book": book, "units": units}
     return render(request, "books/detail.html", data)
 

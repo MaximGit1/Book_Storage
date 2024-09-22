@@ -31,5 +31,4 @@ def get_user_profile(user) -> Profile | None:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
         profile = None
-        print("Profile DoesNotExist")
     return profile
