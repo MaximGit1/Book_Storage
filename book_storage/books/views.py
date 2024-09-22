@@ -1,13 +1,12 @@
-from django.db.models import QuerySet
 from django.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseRedirect,
     HttpResponseNotFound,
 )
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Book, BookUnit, MarkDownReview
+from .models import MarkDownReview
 from .forms import CreateMarkDownReviewForm
 from . import services
 
@@ -53,16 +52,16 @@ def review_detail_view(request: HttpRequest, review_id: int) -> HttpResponse:
 def create_review_view(
     request: HttpRequest, unit_id: int
 ) -> HttpResponse | HttpResponseRedirect:
-    unit: BookUnit = get_object_or_404(BookUnit, pk=unit_id)
+    unit = services.get_book_unit_by_id(unit_id)
+    if not unit:
+        return HttpResponse("Unit not found", status=404)
+
     if request.method == "POST":
-        form = CreateMarkDownReviewForm(request.POST)
-        if form.is_valid():
-            review: MarkDownReview = form.save(commit=False)
-            review.unit = unit
-            review.author = request.user
-            review.save()
+        review = services.create_review_for_unit(unit, request.user, request.POST)
+        if review:
             return redirect(review.get_absolute_url())
     else:
         form = CreateMarkDownReviewForm()
+
     data = {"form": form, "unit": unit}
     return render(request, "books/unit/review/create.html", data)

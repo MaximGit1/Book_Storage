@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.db.models import QuerySet, Model, Manager
+from django.db.models import QuerySet, Model
 from .models import Book, BookUnit, MarkDownReview
+from .forms import CreateMarkDownReviewForm
 
 
 User = get_user_model()
@@ -29,9 +30,17 @@ def get_book_units(book: Book) -> QuerySet[BookUnit]:
     return book.units.all()
 
 
+### through **kwargs, need to update views
 def get_book_unit(book: Book, unit_order: int) -> BookUnit | None:
     """returns the specific book unit"""
     return _try_to_get_object(BookUnit, book=book, unit_order=unit_order)
+
+
+def get_book_unit_by_id(unit_id: int):
+    return _try_to_get_object(BookUnit, pk=unit_id)
+
+
+###
 
 
 def get_user_review(unit: BookUnit, author: User) -> MarkDownReview | None:
@@ -51,5 +60,19 @@ def get_active_reviews(
         reviews = MarkDownReview.active.filter(unit=unit)
     return reviews
 
+
 def get_active_review(review_id: int):
     return _try_to_get_object(MarkDownReview, pk=review_id, is_active=True)
+
+
+def create_review_for_unit(
+    unit: BookUnit, author: User, post_data
+) -> MarkDownReview | None:
+    form = CreateMarkDownReviewForm(post_data)
+    if form.is_valid():
+        review = form.save(commit=False)
+        review.unit = unit
+        review.author = author
+        review.save()
+        return review
+    return None
