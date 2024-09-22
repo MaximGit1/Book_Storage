@@ -64,3 +64,13 @@ class TestBook(TestCase):
         response = self.client.get(f"/book/review/{self.review.pk}/")
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.review.body, response.content.decode())
+
+    def test_unit_detail_view(self):
+        url = reverse(
+            "books:unit_detail", args=[self.unit.book.slug, self.unit.unit_order]
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.client.login(username="test_user", password="test_password")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)

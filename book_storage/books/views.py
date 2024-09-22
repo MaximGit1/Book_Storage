@@ -1,5 +1,10 @@
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseRedirect,
+    HttpResponseNotFound,
+)
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Book, BookUnit, MarkDownReview
@@ -13,7 +18,9 @@ def book_list_view(request: HttpRequest) -> HttpResponse:
     return render(request, "books/list.html", data)
 
 
-def book_detail_view(request: HttpRequest, book_slug: str) -> HttpResponse | HttpResponseNotFound:
+def book_detail_view(
+    request: HttpRequest, book_slug: str
+) -> HttpResponse | HttpResponseNotFound:
     book = services.get_published_book(book_slug)
     if book is None:
         return HttpResponseNotFound("<h1>Not found...</h1>")
@@ -22,20 +29,16 @@ def book_detail_view(request: HttpRequest, book_slug: str) -> HttpResponse | Htt
     return render(request, "books/detail.html", data)
 
 
+@login_required
 def unit_detail_view(
     request: HttpRequest, book_slug: str, unit_order: int
 ) -> HttpResponse:
-    book: Book = get_object_or_404(Book, slug=book_slug)
-    unit: BookUnit = get_object_or_404(BookUnit, book=book, unit_order=unit_order)
-    user_review: MarkDownReview | None = MarkDownReview.active.filter(
-        unit=unit, author=request.user
-    ).first()
-    if user_review:
-        reviews: QuerySet[MarkDownReview] = MarkDownReview.active.exclude(
-            pk=user_review.pk
-        ).filter(unit=unit)
-    else:
-        reviews: QuerySet[MarkDownReview] = MarkDownReview.active.filter(unit=unit)
+    book = services.get_published_book(book_slug)
+    if book is None:
+        return HttpResponseNotFound("<h1>Not found...</h1>")
+    unit = services.get_book_unit(book, unit_order)
+    user_review = services.get_user_review(unit, request.user)
+    reviews = services.get_active_reviews(unit, exclude_user_review=user_review)
     data = {"book": book, "unit": unit, "reviews": reviews, "user_review": user_review}
     return render(request, "books/unit/detail.html", data)
 
