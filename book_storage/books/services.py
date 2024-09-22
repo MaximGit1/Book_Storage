@@ -50,3 +50,6 @@ def get_active_reviews(
     else:
         reviews = MarkDownReview.active.filter(unit=unit)
     return reviews
+
+def get_active_review(review_id: int):
+    return _try_to_get_object(MarkDownReview, pk=review_id, is_active=True)

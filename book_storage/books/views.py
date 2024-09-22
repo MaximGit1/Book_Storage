@@ -44,9 +44,7 @@ def unit_detail_view(
 
 
 def review_detail_view(request: HttpRequest, review_id: int) -> HttpResponse:
-    review: MarkDownReview = get_object_or_404(
-        MarkDownReview, pk=review_id, is_active=True
-    )
+    review = services.get_active_review(review_id)
     data = {"review": review}
     return render(request, "books/unit/review/detail.html", data)
 
