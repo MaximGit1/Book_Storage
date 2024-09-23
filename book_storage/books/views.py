@@ -75,18 +75,10 @@ def create_review_view(
 
 @login_required
 @require_POST
-def unit_like_view(request: HttpRequest) -> JsonResponse:
+def unit_like_view (request: HttpRequest) -> JsonResponse:
     unit_id = request.POST.get('id')
     action = request.POST.get('action')
-    if unit_id and action:
-        try:
-            unit = services.get_book_unit_by_id(unit_id)
-            if action == "like":
-                unit.users_like.add(request.user)
-            else:
-                unit.users_like.remove(request.user)
-            return JsonResponse({'status': 'ok'})
-        except BookUnit.DoesNotExist:
-            pass
-    return JsonResponse({'status': 'error'})
+    result = services.like_logic(unit_id, action, request.user)
+    return JsonResponse(result)
+
 

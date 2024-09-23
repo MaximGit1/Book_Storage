@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db.models import QuerySet, Model
+from django.http import JsonResponse
+
 from .models import Book, BookUnit, MarkDownReview
 from .forms import CreateMarkDownReviewForm
 
@@ -76,3 +78,22 @@ def create_review_for_unit(
         review.save()
         return review
     return None
+
+
+def like_logic(unit_id: int, action: str, user: User) -> dict[str, str]:
+    if unit_id and action:
+        try:
+            unit = get_book_unit_by_id(unit_id)
+            if not unit:
+                return {'status': 'error'}  # Возвращаем ошибку, если юнит не найден
+
+            if action == "like":
+                unit.users_like.add(user)
+            elif action == "unlike":
+                unit.users_like.remove(user)
+            else:
+                return {'status': 'error'}
+            return {'status': 'ok'}
+        except BookUnit.DoesNotExist:
+            return {'status': 'error'}
+    return {'status': 'error'}
