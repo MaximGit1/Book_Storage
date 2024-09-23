@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.db import models
 
+
 class PublishedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status=Book.Status.PUBLISHED)
@@ -54,6 +55,10 @@ class BookUnit(models.Model):
     description = models.TextField(max_length=155)
     image = models.ImageField(upload_to="books/units/%Y/%m/")
     unit_order = models.PositiveSmallIntegerField(unique=True)
+    users_like = models.ManyToManyField(
+        to=settings.AUTH_USER_MODEL, related_name="images_liked", blank=True
+    )
+    total_likes = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.book}: {self.title}"
