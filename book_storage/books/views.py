@@ -2,13 +2,17 @@ from django.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseRedirect,
-    HttpResponseNotFound,
+    HttpResponseNotFound, JsonResponse,
 )
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
 from .forms import CreateMarkDownReviewForm
 from . import services
 from django.views.generic import ListView
+
+from .models import BookUnit
 
 
 class BookListView(ListView):
@@ -67,3 +71,22 @@ def create_review_view(
 
     data = {"form": form, "unit": unit}
     return render(request, "books/unit/review/create.html", data)
+
+
+@login_required
+@require_POST
+def unit_like_view(request: HttpRequest) -> JsonResponse:
+    unit_id = request.POST.get('id')
+    action = request.POST.get('action')
+    if unit_id and action:
+        try:
+            unit = services.get_book_unit_by_id(unit_id)
+            if action == "like":
+                unit.users_like.add(request.user)
+            else:
+                unit.users_like.remove(request.user)
+            return JsonResponse({'status': 'ok'})
+        except BookUnit.DoesNotExist:
+            pass
+    return JsonResponse({'status': 'error'})
+
