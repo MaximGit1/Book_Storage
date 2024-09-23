@@ -6,15 +6,17 @@ from django.http import (
 )
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import MarkDownReview
 from .forms import CreateMarkDownReviewForm
 from . import services
+from django.views.generic import ListView
 
 
-def book_list_view(request: HttpRequest) -> HttpResponse:
-    books = services.get_published_books()
-    data = {"books": books}
-    return render(request, "books/list.html", data)
+class BookListView(ListView):
+    template_name = "books/list.html"
+    context_object_name = "books"
+
+    def get_queryset(self):
+        return services.get_published_books()
 
 
 def book_detail_view(

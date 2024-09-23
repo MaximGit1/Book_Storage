@@ -38,7 +38,7 @@ class TestBook(TestCase):
             updated=timezone.now(),
         )
 
-    def test_book_list(self):
+    def test_BookListView(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
