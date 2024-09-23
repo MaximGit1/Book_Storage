@@ -1,18 +1,16 @@
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.shortcuts import render, redirect
+from .forms import CreateMarkDownReviewForm
+from django.views.generic import ListView
 from django.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseRedirect,
-    HttpResponseNotFound, JsonResponse,
+    HttpResponseNotFound,
+    JsonResponse,
 )
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-
-from .forms import CreateMarkDownReviewForm
 from . import services
-from django.views.generic import ListView
-
-from .models import BookUnit
 
 
 class BookListView(ListView):
@@ -29,6 +27,7 @@ def book_detail_view(
     book = services.get_published_book(book_slug)
     if book is None:
         return HttpResponseNotFound("<h1>Not found...</h1>")
+
     units = services.get_book_units(book)
     data = {"book": book, "units": units}
     return render(request, "books/detail.html", data)
@@ -41,9 +40,11 @@ def unit_detail_view(
     book = services.get_published_book(book_slug)
     if book is None:
         return HttpResponseNotFound("<h1>Not found...</h1>")
+
     unit = services.get_book_unit(book, unit_order)
     user_review = services.get_user_review(unit, request.user)
     reviews = services.get_active_reviews(unit, exclude_user_review=user_review)
+
     data = {"book": book, "unit": unit, "reviews": reviews, "user_review": user_review}
     return render(request, "books/unit/detail.html", data)
 
@@ -75,10 +76,8 @@ def create_review_view(
 
 @login_required
 @require_POST
-def unit_like_view (request: HttpRequest) -> JsonResponse:
-    unit_id = request.POST.get('id')
-    action = request.POST.get('action')
+def unit_like_view(request: HttpRequest) -> JsonResponse:
+    unit_id = request.POST.get("id")
+    action = request.POST.get("action")
     result = services.like_logic(unit_id, action, request.user)
     return JsonResponse(result)
-
-

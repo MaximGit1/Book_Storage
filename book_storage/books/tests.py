@@ -72,6 +72,7 @@ class TestBook(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.client.login(username="test_user", password="test_password")
+
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -83,21 +84,23 @@ class TestBook(TestCase):
     def test_unit_like_ok(self):
         url = reverse("books:unit_like")
         self.client.login(username="test_user", password="test_password")
+
         for action in ("unlike", "like", "like", "unlike"):
-            # Тестируем лайк
             data = {"id": self.unit.pk, "action": action}
             response = self.client.post(url, data)
             self.assertEqual(response.status_code, 200)
-            self.assertJSONEqual(response.content, {'status': 'ok'})
+            self.assertJSONEqual(response.content, {"status": "ok"})
 
     def test_unit_like_error(self):
         url = reverse("books:unit_like")
         self.client.login(username="test_user", password="test_password")
+
         data = {"id": 1999, "action": "like"}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'status': 'error'})
+        self.assertJSONEqual(response.content, {"status": "error"})
+
         data = {"id": self.unit.pk, "action": "invalid_action"}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'status': 'error'})
+        self.assertJSONEqual(response.content, {"status": "error"})

@@ -1,6 +1,6 @@
-from django.contrib import admin
 from .models import Book, Author, BookUnit, MarkDownReview
 from django.utils.safestring import mark_safe
+from django.contrib import admin
 
 
 @admin.register(Book)
@@ -12,7 +12,8 @@ class BookAdmin(admin.ModelAdmin):
     list_editable = ("status",)
     fields = ("title", "slug", "author", "preview_image", "image", "status", "publish")
 
-    def preview_image(self, obj: Book):
+    @staticmethod
+    def preview_image(obj: Book):
         return mark_safe(f'<img src="{obj.image.url}" alt="img" width=100px>')
 
 
@@ -27,7 +28,8 @@ class BookUnitAdmin(admin.ModelAdmin):
     fields = ("title", "preview_image", "image", "description", "unit_order", "book")
     readonly_fields = ("book", "preview_image")
 
-    def preview_image(self, obj: Book):
+    @staticmethod
+    def preview_image(obj: Book):
         return mark_safe(f'<img src="{obj.image.url}" alt="img" width=150px>')
 
 

@@ -8,6 +8,7 @@ class PublishedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status=Book.Status.PUBLISHED)
 
+
 class ActiveManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_active=True)
@@ -71,9 +72,13 @@ class BookUnit(models.Model):
 
 
 class MarkDownReview(models.Model):
-    unit = models.ForeignKey(to=BookUnit, related_name="md_reviews", on_delete=models.CASCADE)
+    unit = models.ForeignKey(
+        to=BookUnit, related_name="md_reviews", on_delete=models.CASCADE
+    )
     body = models.TextField()
-    author = models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name="comments", on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL, related_name="comments", on_delete=models.CASCADE
+    )
     updated = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
 
@@ -85,5 +90,3 @@ class MarkDownReview(models.Model):
 
     def get_absolute_url(self) -> str:
         return reverse("books:review_detail", args=[self.pk])
-
-

@@ -1,9 +1,8 @@
-from django.contrib.auth import get_user_model
-from django.db.models import QuerySet, Model
-from django.http import JsonResponse
-
 from .models import Book, BookUnit, MarkDownReview
 from .forms import CreateMarkDownReviewForm
+from django.contrib.auth import get_user_model
+from django.db.models import QuerySet, Model
+from typing import Any
 
 
 User = get_user_model()
@@ -14,7 +13,7 @@ def get_published_books() -> QuerySet[Book]:
     return Book.published.all()
 
 
-def _try_to_get_object(model: Model, **kwargs) -> Model | None:
+def _try_to_get_object(model: Any, **kwargs) -> Model | None:
     try:
         obj = model.objects.get(**kwargs)
     except (model.DoesNotExist, model.MultipleObjectsReturned):
@@ -32,7 +31,6 @@ def get_book_units(book: Book) -> QuerySet[BookUnit]:
     return book.units.all()
 
 
-### through **kwargs, need to update views
 def get_book_unit(book: Book, unit_order: int) -> BookUnit | None:
     """returns the specific book unit"""
     return _try_to_get_object(BookUnit, book=book, unit_order=unit_order)
@@ -40,9 +38,6 @@ def get_book_unit(book: Book, unit_order: int) -> BookUnit | None:
 
 def get_book_unit_by_id(unit_id: int):
     return _try_to_get_object(BookUnit, pk=unit_id)
-
-
-###
 
 
 def get_user_review(unit: BookUnit, author: User) -> MarkDownReview | None:
@@ -81,19 +76,23 @@ def create_review_for_unit(
 
 
 def like_logic(unit_id: int, action: str, user: User) -> dict[str, str]:
-    if unit_id and action:
-        try:
-            unit = get_book_unit_by_id(unit_id)
-            if not unit:
-                return {'status': 'error'}  # Возвращаем ошибку, если юнит не найден
+    if not (unit_id and action):
+        return {"status": "error"}
+    try:
+        unit = get_book_unit_by_id(unit_id)
+        if not unit:
+            return {"status": "error"}
+        return _do_action(unit, action, user)
+    except BookUnit.DoesNotExist:
+        return {"status": "error"}
 
-            if action == "like":
-                unit.users_like.add(user)
-            elif action == "unlike":
-                unit.users_like.remove(user)
-            else:
-                return {'status': 'error'}
-            return {'status': 'ok'}
-        except BookUnit.DoesNotExist:
-            return {'status': 'error'}
-    return {'status': 'error'}
+
+def _do_action(unit: BookUnit, action: str, user: User):
+    match action:
+        case "like":
+            unit.users_like.add(user)
+        case "unlike":
+            unit.users_like.remove(user)
+        case _:
+            return {"status": "error"}
+    return {"status": "ok"}

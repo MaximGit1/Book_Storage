@@ -1,6 +1,6 @@
-import requests
-from .models import Profile
 from django.core.files.base import ContentFile
+from .models import Profile
+import requests
 
 
 def save_avatar(backend, user, response, *args, **kwargs):
