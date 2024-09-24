@@ -26,7 +26,7 @@ class AuthorAdmin(admin.ModelAdmin):
 class BookUnitAdmin(admin.ModelAdmin):
     list_display = ("book", "title", "unit_order")
     fields = ("title", "preview_image", "image", "description", "unit_order", "book")
-    readonly_fields = ("book", "preview_image")
+    readonly_fields = ("preview_image",)
 
     @staticmethod
     def preview_image(obj: Book):
