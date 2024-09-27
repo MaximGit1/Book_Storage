@@ -13,6 +13,7 @@ python-dotenv = "^1.0.1"
 pillow = "^10.4.0"
 markdown = "^3.7"
 social-auth-app-django = "^5.4.2"
+psycopg2-binary = "^2.9.9"
 
 
 [build-system]
