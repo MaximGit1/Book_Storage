@@ -6,7 +6,9 @@
 {% block content %}
     <div class="main">
         <div class="general-info">
-            <img src="{{ book.image.url }}" alt="{{ book.title }} style="width="150px">
+            <a href="{{ book.get_absolute_url }}">
+                <img src="{{ book.image.url }}" alt="{{ book.title }} style="width="150px">
+            </a>
             <p>{{ book.title }}</p>
             <p>{{ book.author }}</p>
             <img src="{{ unit.image.url }}" alt="{{ unit.title }} style="width="125px"">

@@ -6,7 +6,9 @@
     <div class="main">
       {% for book in books %}
         <div class="book">
-          <img src="{{ book.image.url }}" alt="{{ book.title }} style="width="150px">
+            <a href="{{ book.get_absolute_url }}">
+                <img src="{{ book.image.url }}" alt="{{ book.title }} style="width="150px">
+            </a>
           <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
         </div>
       {% endfor %}

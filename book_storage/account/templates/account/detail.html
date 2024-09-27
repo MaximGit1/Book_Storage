@@ -11,9 +11,18 @@
         </a>
       <img src="{{ profile.photo.url }}" alt="{{ profile.photo.url }}">
       <p>{{ profile.about|markdown }}</p>
+      <p><a href="#">Подписчики</a> | <a href="#">Подписки</a></p>
     </div>
   <a href="{% url "account:logout" %}">
     <h6>logout</h6>
   </a>
+  <div class="content">
+    <div class="popular_reviews">
+      <h3>Топ 5 самый популярных отзывов</h3>
+    </div>
+    <div class="books_add">
+      <h3>Здесь будет список книг, которые отложил пользователь</h3>
+    </div>
+  </div>
   {% endwith %}
 {% endblock %}
