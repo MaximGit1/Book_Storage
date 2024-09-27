@@ -3,6 +3,7 @@ from .forms import CreateMarkDownReviewForm
 from django.contrib.auth import get_user_model
 from django.db.models import QuerySet, Model
 from typing import Any
+from .books_redis import redis_book
 
 
 User = get_user_model()
@@ -82,17 +83,23 @@ def like_logic(unit_id: int, action: str, user: User) -> dict[str, str]:
         unit = get_book_unit_by_id(unit_id)
         if not unit:
             return {"status": "error"}
-        return _do_action(unit, action, user)
+        return _do_unit_like_action(unit, action, user)
     except BookUnit.DoesNotExist:
         return {"status": "error"}
 
 
-def _do_action(unit: BookUnit, action: str, user: User):
+def _do_unit_like_action(unit: BookUnit, action: str, user: User):
     match action:
         case "like":
+            redis_book.update_book_rating(action, unit.book)
             unit.users_like.add(user)
         case "unlike":
+            redis_book.update_book_rating(action, unit.book)
             unit.users_like.remove(user)
         case _:
             return {"status": "error"}
     return {"status": "ok"}
+
+
+def get_current_book_rating(book: Book) -> int:
+    return redis_book.get_book_rating(book)

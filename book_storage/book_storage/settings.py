@@ -166,3 +166,9 @@ SOCIAL_AUTH_GITHUB_KEY = getenv("SOCIAL_AUTH_GITHUB_KEY")
 SOCIAL_AUTH_GITHUB_SECRET = getenv("SOCIAL_AUTH_GITHUB_SECRET")
 
 LOGIN_URL = "/social-auth/login/github/"
+
+
+# Redis
+REDIS_HOST = getenv("REDIS_HOST")
+REDIS_PORT = getenv("REDIS_PORT")
+REDIS_DB = getenv("REDIS_DB")

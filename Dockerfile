@@ -6,6 +6,7 @@ RUN pip install poetry && poetry config virtualenvs.create false
 
 COPY pyproject.toml poetry.lock /app/
 RUN poetry install --no-root
+RUN poetry add redis
 
 COPY . /app/
 

@@ -25,11 +25,12 @@ def book_detail_view(
     request: HttpRequest, book_slug: str
 ) -> HttpResponse | HttpResponseNotFound:
     book = services.get_published_book(book_slug)
+    book_rating = services.get_current_book_rating(book)
     if book is None:
         return HttpResponseNotFound("<h1>Not found...</h1>")
 
     units = services.get_book_units(book)
-    data = {"book": book, "units": units}
+    data = {"book": book, "units": units, "book_rating": book_rating}
     return render(request, "books/detail.html", data)
 
 
