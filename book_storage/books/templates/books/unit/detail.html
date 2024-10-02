@@ -1,76 +1,168 @@
 {% extends "base.html" %}
+{% load static %}
 {% load books_tags %}
 
 {% block title %}{{ unit.title }}{% endblock %}
 
 {% block content %}
-    <div class="main">
-        <div class="general-info">
-            <a href="{{ book.get_absolute_url }}">
-                <img src="{{ book.image.url }}" alt="{{ book.title }} style="width="150px">
-            </a>
-            <p>{{ book.title }}</p>
-            <p>{{ book.author }}</p>
-            <img src="{{ unit.image.url }}" alt="{{ unit.title }} style="width="125px"">
-            <p>Unit {{ unit.unit_order }} - {{ unit.title }}</p>
-            <p>In unit: {{ unit.description }}</p>
-            {% with total_likes=unit.users_like.count users_like=unit.users_like.all %}
-            <div class="unit-info">
-                <div>
-                <span class="count">
-                <span class="total">{{ total_likes }}</span>
-                like{{ total_likes|pluralize }}
-                </span>
-                <a href="#" data-id="{{ unit.pk }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
+<link rel="stylesheet" href="{% static "css/style-unit.css" %}">
+   <div class="main">
+            <div class="book">
+                <img src="{{ book.image.url }}" alt="{{ book.title }}">
+                <div class="Text">
+                     <h1>{{ book.title }}</h1>
+                    <p>Автор: {{ book.author }}</p>
+                    <p>Рейтинг главы: {{ unit.total_likes }}</p>
+
+                  <p><a href="#" data-id="{{ unit.pk }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
                     {% if request.user not in users_like %}
                         Like
                     {% else %}
                         Unlike
                     {% endif %}
-                </a>
-                 {% endwith %}
+                </a><a href="#">
+                        Добавить главу в закладки
+                    </a></p>
+                    <p>теги: #нет #системы #тегов</p>
                 </div>
             </div>
-        <div class="reviews">
-            <h2>Тут будет слайдер среди самых популярных отзывов</h2>
-            {% for review in reviews %}
-                <div class="review">
-                    <p>Тут аватарка будет, {{ review.author.username }}</p>
-                    <p>{{ review.body|markdown }}</p>
-                    <p>Updated: {{ review.updated }}</p>
+            <div class="glav">
+                <div class="unit-book">
+                    <div class="img"><img src="{{ unit.image.url }}" alt="{{ unit.title }}"></div>
                 </div>
-            {% empty %}
-                <p>No reviews</p>
-            {% endfor %}
-        </div>
-        <div class="user-review">
-            {% if user_review %}
-                <div class="user-review">
-                    <h4>Your preview</h4>
-                    <p>{{ user_review.body|markdown|truncatewords_html:5 }}
-                    <a href="{{ user_review.get_absolute_url }}">read</a> </p>
+                <div class="text">
+                    <h1>{{ unit.title }}</h1>
+                    <p>{{ unit.description }}</p>
                 </div>
-            {% else %}
-            <a href="{% url "books:create_review" unit.pk %}">
-                <p>You can write a review</p>
-            </a>
-            {% endif %}
-        </div>
-        <div class="review_list">
-            <h2>Тут просто кто что написал и ссылка, чтобы прочитать</h2>
-            {% for review in reviews %}
-                <div class="review">
-                    <p>Тут аватарка будет, {{ review.author.username }}</p>
-                    <a href="{{ review.get_absolute_url }}">
-                        <p>{{ review.body|markdown|truncatewords_html:7 }}</p>
-                    </a>
-                    <p>Updated: {{ review.updated }}</p>
-                </div>
-            {% empty %}
-                <p>No reviews</p>
-            {% endfor %}
-        </div>
+            </div>
+
+            <div class="slider-wrapper">
+              <div class="slider" style="transform: translateX(0%);">
+                  {% for slider_review in reviews %}
+                    <div class="review">
+                      <div class="review-header">
+                        <a href="#">
+                          <img src="{{ slider_review.author.profile.photo.url }}" alt="{{ slider_review.author }}" class="avatar">
+                          <span class="username">{{ slider_review.author }}</span>
+                        </a>
+                        <span class="rating">999</span>
+                      </div>
+                      <div class="review-body">
+                        <p>{{ slider_review.body|markdown|truncatewords_html:34 }}</p>
+                        <a href="{{ slider_review.get_absolute_url }}" target="_blank">Открыть полностью</a>
+                      </div>
+                      <div class="review-footer">
+                        <a href="#" data-id="1" data-action="like" class="like button">Unlike</a>
+                        <a href="#" data-id="1" class="follow button">Подписаться</a>
+                      </div>
+                    </div>
+                  {% empty %}
+                    <h2>No reviews</h2>
+                  {% endfor %}
+              </div>
+            </div>
+
+<button class="slider-prev">Назад</button>
+<button class="slider-next">Вперед</button>
+
+            <div class="user-review">
+                {% if user_review %}
+                    <div class="user-review">
+                        <h4>Your preview</h4>
+                        <p>{{ user_review.body|markdown|truncatewords_html:5 }}
+                        <a href="{{ user_review.get_absolute_url }}">read</a> </p>
+                    </div>
+                {% else %}
+                <a href="{% url "books:create_review" unit.pk %}">
+                    <p>You can write a review</p>
+                </a>
+                {% endif %}
+            </div>
+
     </div>
+
+<style>
+  .slider-wrapper {
+    width: 100%; /* ширина слайдера */
+    overflow: hidden; /* скрыть все, что выходит за пределы видимой области */
+    position: relative;
+  }
+
+  .slider {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+    width: 200%; /* Увеличить ширину для всех отзывов */
+  }
+
+  .review {
+    flex: 0 0 100%; /* каждый отзыв занимает 100% видимой области */
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+
+  .review-header {
+    display: flex;
+    align-items: center;
+  }
+
+  .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+
+  .username {
+    font-weight: bold;
+  }
+
+  .rating {
+    margin-left: auto;
+    font-size: 16px;
+    color: #f39c12;
+  }
+
+  .review-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .button {
+    color: blue;
+    text-decoration: none;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  const slider = document.querySelector('.slider');
+  const reviews = document.querySelectorAll('.review');
+  const prevButton = document.querySelector('.slider-prev');
+  const nextButton = document.querySelector('.slider-next');
+  let currentIndex = 0;
+
+  function showSlide(index) {
+    // Рассчитываем смещение слайдера в зависимости от текущего индекса
+    slider.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  nextButton.addEventListener('click', () => {
+    if (currentIndex < reviews.length - 1) {
+      currentIndex++;
+      showSlide(currentIndex);
+    }
+  });
+
+  prevButton.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      showSlide(currentIndex);
+    }
+  });
+</script>
+
 {% endblock %}
 
 {% block domready %}
@@ -112,4 +204,15 @@
       }
     })
   });
+
+
+
+
+
+
+
+
+
+
+
 {% endblock %}

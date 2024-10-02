@@ -44,7 +44,7 @@ def unit_detail_view(
 
     unit = services.get_book_unit(book, unit_order)
     user_review = services.get_user_review(unit, request.user)
-    reviews = services.get_active_reviews(unit, exclude_user_review=user_review)
+    reviews = services.get_active_reviews(unit)
 
     data = {"book": book, "unit": unit, "reviews": reviews, "user_review": user_review}
     return render(request, "books/unit/detail.html", data)
